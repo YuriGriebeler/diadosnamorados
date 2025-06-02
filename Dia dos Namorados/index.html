@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dia dos Namorados - Nosso Amor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Dancing+Script:wght@400;700&display=swap');
+
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #4b0082, #c71585, #ffd700);
+      background-size: 400%;
+      animation: gradient 8s ease infinite;
+      overflow-x: hidden;
+      touch-action: manipulation;
+      margin: 0;
+      min-height: 100vh;
+    }
+
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .petal {
+      position: absolute;
+      width: 12px;
+      height: 12px;
+      background: #ff5e62;
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      animation: fall 5s ease-in-out infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(-100vh) rotate(0deg); opacity: 0.8; }
+      100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+    }
+
+    .quiz-option {
+      transition: all 0.3s ease;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    .quiz-option:hover {
+      transform: scale(1.05);
+      background-color: #f5e1ee;
+    }
+
+    .score-counter {
+      font-size: clamp(1.2rem, 4vw, 1.5rem);
+      font-weight: bold;
+      color: #ffd700;
+      animation: pulse 0.8s ease-in-out infinite;
+    }
+
+    .heart-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .heart {
+      width: clamp(100px, 25vw, 120px);
+      height: clamp(100px, 25vw, 120px);
+      background: linear-gradient(135deg, #ff5e62, #ff8e8e);
+      position: relative;
+      transform: rotate(-45deg);
+      animation: heartPulse 1.2s ease-in-out infinite;
+      box-shadow: 0 0 20px rgba(255, 94, 123, 0.7);
+      border-radius: 10px;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: '';
+      width: 100%;
+      height: 100%;
+      background: inherit;
+      border-radius: 50%;
+      position: absolute;
+      box-shadow: inherit;
+    }
+
+    .heart::before {
+      top: -50%;
+      left: 0;
+    }
+
+    .heart::after {
+      left: 50%;
+      top: 0;
+    }
+
+    .heart-message {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+      color: #ffd700;
+      text-shadow: 0 0 10px #ffd700, 0 0 20px #ff5e62;
+      animation: glow 2s ease-in-out infinite;
+      margin-top: 1.5rem;
+    }
+
+    @keyframes heartPulse {
+      0% { transform: rotate(-45deg) scale(1); }
+      50% { transform: rotate(-45deg) scale(1.15); }
+      100% { transform: rotate(-45deg) scale(1); }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes glow {
+      0% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ff5e62; }
+      50% { text-shadow: 0 0 20px #ffd700, 0 0 30px #ff5e62; }
+      100% { text-shadow: 0 0 10px #ffd700, 0 0 20px #ff5e62; }
+    }
+
+    /* Media Queries para Responsividade */
+    @media (max-width: 640px) {
+      h1 {
+        font-size: clamp(2rem, 8vw, 2.5rem);
+      }
+
+      .quiz-container {
+        padding: 0.5rem;
+      }
+
+      .quiz-option {
+        font-size: 0.9rem;
+        padding: 0.5rem;
+      }
+
+      .main-screen header h1 {
+        font-size: clamp(2.5rem, 10vw, 3rem);
+      }
+
+      .main-screen header p {
+        font-size: clamp(1rem, 4vw, 1.2rem);
+      }
+
+      .main-screen section h2 {
+        font-size: clamp(1.5rem, 6vw, 2rem);
+      }
+
+      .main-screen section p {
+        font-size: clamp(0.9rem, 3.5vw, 1rem);
+      }
+
+      .gallery img {
+        width: 100%;
+        height: auto;
+      }
+
+      .prize-btn {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+<!-- Tela do Quiz -->
+<div id="quizScreen" class="flex flex-col items-center p-4 sm:p-6 w-full quiz-container">
+  <h1 class="text-3xl sm:text-4xl md:text-5xl text-yellow-300 font-['Dancing_Script'] mb-2 sm:mb-4">Nosso Amor em Quiz, Meu Amor!</h1>
+  <p class="text-base sm:text-lg md:text-xl text-gray-100 mb-2 sm:mb-4">Responda sobre nosso amor e descubra sua surpresa especial!</p>
+  <p id="score" class="score-counter mb-2 sm:mb-4">Pontuação: 0</p>
+  <div id="quizContainer" class="w-full max-w-md sm:max-w-lg">
+    <h2 id="questionText" class="text-lg sm:text-xl md:text-2xl text-gray-100 mb-4"></h2>
+    <div id="optionsContainer" class="grid grid-cols-1 gap-2 sm:gap-3"></div>
+    <p id="feedback" class="mt-2 sm:mt-4 text-sm sm:text-base text-gray-100"></p>
+    <p id="progress" class="mt-2 sm:mt-4 text-sm sm:text-base text-gray-200"></p>
+  </div>
+</div>
+
+<!-- Tela Principal -->
+<div id="mainScreen" class="hidden max-w-4xl mx-auto p-4 sm:p-6 w-full main-screen">
+  <header class="py-4 sm:py-6">
+    <h1 class="text-3xl sm:text-4xl md:text-5xl text-yellow-300 font-['Dancing_Script']">Feliz Dia dos Namorados, Minha Amada!</h1>
+    <p class="mt-2 sm:mt-4 text-base sm:text-lg md:text-xl text-pink-400">Para a minha Brisa de Primavera</p>
+  </header>
+
+  <main>
+    <section class="mb-6 sm:mb-8">
+      <h2 class="text-xl sm:text-2xl md:text-3xl text-yellow-300 font-['Dancing_Script'] mb-2 sm:mb-4">Uma Mensagem do Coração</h2>
+      <p class="text-base sm:text-lg md:text-xl text-gray-100">
+        Meu amor, você é a luz que me tirou das sombras. Desde o momento em que te vi, meu mundo se tornou mais colorido. Você é meu amor, minha luz, o calor que aquece meu coração onde a muito tempo estava congelado. Neste Dia dos Namorados, quero te prometer meu coração para te dar meu amor, minha força para te levantar nos momentos difíceis e minha graça para te alegrar nos momentos de tristeza. Te amo mais do que as estrelas no céu minha alemoa! 💖
+      </p>
+    </section>
+
+    <section class="mb-6 sm:mb-8">
+      <h2 class="text-xl sm:text-2xl md:text-3xl text-yellow-300 font-['Dancing_Script'] mb-2 sm:mb-4">Nossos Momentos</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-4 gallery">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (1).png" alt="Nosso passeio especial" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (2).png" alt="Nosso primeiro beijo" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (3) (1).png" alt="Nós dois juntos" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (4).png" alt="Nosso passeio especial" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (5).png" alt="Nosso primeiro beijo" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (6).png" alt="Nós dois juntos" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (7).png" alt="Nosso passeio especial" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (8).png" alt="Nosso primeiro beijo" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+
+        <img src="WhatsApp Image 2025-06-02 at 11.12.25 (9).png" alt="Nosso primeiro beijo" class="rounded-lg shadow-lg hover:scale-105 transition-transform w-full h-48 object-cover" style="aspect-ratio: 3/2">
+      </div>
+    </section>
+
+    <section class="text-center">
+      <button id="prizeBtn" class="bg-pink-600 text-gray-100 text-base sm:text-lg px-4 sm:px-6 py-2 sm:py-3 rounded-full hover:bg-pink-700 transition prize-btn">
+        Agora Pegue seu Prêmio
+      </button>
+    </section>
+  </main>
+
+  <footer class="py-4 sm:py-6 text-gray-100 text-center">
+    <p>Feito com todo o amor do mundo para você. ❤️</p>
+  </footer>
+</div>
+
+<!-- Tela do Coração -->
+<div id="heartScreen" class="hidden flex flex-col items-center justify-center p-4 sm:p-6 w-full">
+  <div class="heart-container">
+    <div class="heart"></div>
+    <p class="heart-message">Olhe para trás</p>
+  </div>
+</div>
+
+<script>
+  // Perguntas do Quiz
+  const questions = [
+    {
+      question: "Quando eu te pedi em namoro?",
+      options: ["1º de Janeiro de 2023", "3 de Maio de 2023", "14 de Fevereiro de 2023", "20 de Outubro de 2022"],
+      correct: "3 de Maio de 2023"
+    },
+    {
+      question: "Qual apelido eu te dei?",
+      options: ["Amorzinha", "Jerseyzinha", "Princesinha", "Queridinha"],
+      correct: "Jerseyzinha"
+    },
+    {
+      question: "Onde eu te pedi em namoro?",
+      options: ["Na praia", "No parque", "No alto do morro", "No cinema"],
+      correct: "No alto do morro"
+    },
+    {
+      question: "Qual a nossa comida favorita?",
+      options: ["Lasanha", "Pizza caseira", "Sushi", "Bolo de chocolate"],
+      correct: "Sushi"
+    },
+    {
+      question: "Qual música eu dediquei para você?",
+      options: ["Perfect - Ed Sheeran", "Love Story - Taylor Swift", "Can't Help Falling in Love - Elvis Presley", "Shallow - Lady Gaga"],
+      correct: "Can't Help Falling in Love - Elvis Presley"
+    }
+  ];
+
+  let currentQuestion = 0;
+  let score = 0;
+
+  const quizContainer = document.getElementById('quizContainer');
+  const questionText = document.getElementById('questionText');
+  const optionsContainer = document.getElementById('optionsContainer');
+  const feedback = document.getElementById('feedback');
+  const progress = document.getElementById('progress');
+  const scoreDisplay = document.getElementById('score');
+  const quizScreen = document.getElementById('quizScreen');
+  const mainScreen = document.getElementById('mainScreen');
+  const heartScreen = document.getElementById('heartScreen');
+  const prizeBtn = document.getElementById('prizeBtn');
+
+  // Mostrar pergunta atual
+  function showQuestion() {
+    const q = questions[currentQuestion];
+    questionText.textContent = q.question;
+    optionsContainer.innerHTML = '';
+    q.options.forEach(option => {
+      const button = document.createElement('button');
+      button.className = 'quiz-option bg-gray-100 text-gray-800 text-sm sm:text-base px-3 sm:px-4 py-2 rounded-lg shadow-md w-full';
+      button.textContent = option;
+      button.addEventListener('click', () => checkAnswer(option));
+      optionsContainer.appendChild(button);
+    });
+    progress.textContent = `Pergunta ${currentQuestion + 1} de ${questions.length}`;
+    scoreDisplay.textContent = `Pontuação: ${score}`;
+    feedback.textContent = '';
+  }
+
+  // Verificar resposta
+  function checkAnswer(selected) {
+    const q = questions[currentQuestion];
+    if (selected === q.correct) {
+      score += 100;
+      feedback.textContent = `Isso mesmo, meu amor! Você ganhou 100 pontos! 💖`;
+      feedback.className = 'mt-2 sm:mt-4 text-sm sm:text-base text-yellow-200';
+      scoreDisplay.textContent = `Pontuação: ${score}`;
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+          showQuestion();
+        } else {
+          quizScreen.className = 'hidden';
+          mainScreen.className = 'max-w-4xl mx-auto p-4 sm:p-6 w-full main-screen';
+        }
+      }, 1500);
+    } else {
+      feedback.textContent = 'Quase! Tente novamente, você consegue! 😘';
+      feedback.className = 'mt-2 sm:mt-4 text-sm sm:text-base text-red-300';
+    }
+  }
+
+  // Mostrar tela do coração
+  prizeBtn.addEventListener('click', () => {
+    mainScreen.className = 'hidden';
+    heartScreen.className = 'flex flex-col items-center justify-center p-4 sm:p-6 w-full';
+    for (let i = 0; i < 20; i++) setTimeout(createPetal, i * 200);
+  });
+
+  // Animação de pétalas
+  function createPetal() {
+    const petal = document.createElement('div');
+    petal.className = 'petal';
+    petal.style.left = Math.random() * 100 + 'vw';
+    petal.style.animationDuration = Math.random() * 3 + 3 + 's';
+    document.body.appendChild(petal);
+    setTimeout(() => petal.remove(), 5000);
+  }
+
+  // Iniciar quiz
+  showQuestion();
+</script>
+</body>
+</html>
